@@ -21,10 +21,15 @@ function updateDate(){
     const seconde = now.getSeconds();
     const minute = now.getMinutes();
     const hour = now.getHours();
+    if (seconde === 0){
+        document.querySelectorAll('.arrow').forEach((time)=>{
+            time.style.transition = "unset";
+            setTimeout(()=>{time.style.transition = "all 0.05s cubic-bezier(0, 2.09, 0.58, 1"}, 500)
+        })
+    }
     document.querySelector('.seconde').style.transform = `translate(-100%, -50%) rotate(${(seconde * 6) + 90 }deg)`
     document.querySelector('.minute').style.transform = `translate(-100%, -50%) rotate(${(minute * 6)+ (seconde* 0.1) + 90}deg)`
     document.querySelector('.hour').style.transform = `translate(-100%, -50%) rotate(${((hour%12)*30) +(minute * 0.5) + 90}deg)`
-
 }
 setInterval(updateDate,1000)
 

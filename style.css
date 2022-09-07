@@ -18,6 +18,12 @@ body {
     transform: translate(-50%, -50%);
 }
 
+@media (max-width: 400px ) {
+    .container{
+        transform: translate(-50%, -50%) scale(0.75);
+    }
+}
+
 .border-circle{
     position: absolute;
     top: 50%;
