@@ -16,5 +16,17 @@ function clockCreation(){
         clockCircle.appendChild(line);
     }
 }
+function updateDate(){
+    const now = new Date(); 
+    const seconde = now.getSeconds();
+    const minute = now.getMinutes();
+    const hour = now.getHours();
+    document.querySelector('.seconde').style.transform = `translate(-100%, -50%) rotate(${(seconde * 6) + 90 }deg)`
+    document.querySelector('.minute').style.transform = `translate(-100%, -50%) rotate(${(minute * 6)+ (seconde* 0.1) + 90}deg)`
+    document.querySelector('.hour').style.transform = `translate(-100%, -50%) rotate(${((hour%12)*30) +(minute * 0.5) + 90}deg)`
+
+}
+setInterval(updateDate,1000)
 
 clockCreation();
+updateDate();
