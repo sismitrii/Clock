@@ -32,17 +32,18 @@ function updateDate(){
     document.querySelector('.hour').style.transform = `translate(-100%, -50%) rotate(${((hour%12)*30) +(minute * 0.5) + 90}deg)`;
 }
 
+const timeTab = [
+    {type:'.hour__one', modulo: 3},
+    {type:'.hour__two', modulo: 10},
+    {type:'.minute__one', modulo: 6},
+    {type:'.minute__two',modulo: 10},
+    {type:'.seconde__one', modulo: 6},
+    {type:'.seconde__two', modulo: 10}
+]
+
 function initDigitalClock(){
     const now = new Date();
     const digitTab = now.toString().split(' ')[4].split('').filter((x)=> x !==':');
-    const timeTab = [
-        {type:'.hour__one', modulo: 3},
-        {type:'.hour__two', modulo: 10},
-        {type:'.minute__one', modulo: 6},
-        {type:'.minute__two',modulo: 10},
-        {type:'.seconde__one', modulo: 6},
-        {type:'.seconde__two', modulo: 10}
-    ]
 
     timeTab.forEach((time)=>{
         document.querySelector(`${time.type} .behind .front p`).innerText = (parseInt(digitTab[0]) + 1)%time.modulo;
@@ -54,40 +55,41 @@ function initDigitalClock(){
     })
 }
 
-function updateDigit(obj){
+function updateDigitalClock(obj = {type: '.seconde__two', modulo: 10}){
     const now = new Date();
 
-    let digitValue = 2;
+    let digitValue = 0;
     let nextObj;
     switch (obj.type){
         case '.seconde__two' :
-            digitValue = (now.getSeconds())%10;
+            digitValue = isTimer ? count%10 : (now.getSeconds())%10;
             nextObj = {type: '.seconde__one', modulo: 6}
         break;
         case '.seconde__one' :
-            digitValue = Math.ceil(now.getSeconds()/10)
+            digitValue = isTimer ? Math.ceil((count%60)/10) : Math.ceil(now.getSeconds()/10)
             nextObj = {type: '.minute__two', modulo: 10}
         break;
         case '.minute__two' :
-            digitValue = now.getMinutes()%10
+            digitValue = isTimer ?  Math.ceil(count/60)%10 : now.getMinutes()%10
             nextObj = {type: '.minute__one', modulo: 6}
         break;
         case '.minute__one' :
-            digitValue = Math.ceil(now.getMinutes()/10)
+            digitValue = isTimer ? Math.ceil(Math.ceil(count/60)/10) : Math.ceil(now.getMinutes()/10)
             nextObj = {type: '.hour__two', modulo: 10}
         break;
         case '.hour__two' :
-            digitValue = now.getHours()%10
+            digitValue = isTimer ? Math.ceil(count/3600)%10 : now.getHours()%10
             nextObj = {type: '.hour__one', modulo: 3}
         break;
         case '.hour__one' :
-            digitValue = Math.ceil(now.getHours()/10)
+            digitValue = isTimer ? Math.ceil(Math.ceil(count/3600)/10) : Math.ceil(now.getHours()/10)
             nextObj = null
         break;
     }
     if (digitValue === 0 && nextObj){
-        updateDigit(nextObj)
+        updateDigitalClock(nextObj)
     }
+
     
     const ahead = document.querySelector(`${obj.type} .ahead`);
     const behind = document.querySelector(`${obj.type} .behind`);
@@ -113,25 +115,81 @@ function updateDigit(obj){
     }, 500);
 }
 
-function clockTimerInit(){
-    
-}
 
 let isTimer = false;
-const changeType = document.querySelector('.change-type')
+let isPlaying = false;
+const changeType = document.querySelector('.change-type');
+const playPause = document.querySelector('.play-pause');
+const reset = document.querySelector('.reset');
+
+function timerInit(){
+    document.querySelector('.seconde').style.transform = `translate(-100%, -50%) rotate(90deg)`;
+    document.querySelector('.minute').style.transform = `translate(-100%, -50%) rotate(90deg)`;
+    document.querySelector('.hour').style.transform = `translate(-100%, -50%) rotate(90deg)`;
+
+    timeTab.forEach((time)=>{
+        document.querySelector(`${time.type} .behind .front p`).innerText = 1;
+        document.querySelector(`${time.type} .behind .back p`).innerText = 2;
+        document.querySelector(`${time.type} .ahead .front p`).innerText = 0;
+        document.querySelector(`${time.type} .ahead .back p`).innerText = 1;
+        document.querySelector(`${time.type} .actif .back p`).innerText = 0;
+    })
+}
+
+let count = 0; // nbr seconds
+let playingTimer;
+
+function playPauseFct(){
+    isPlaying = !isPlaying;
+    if (isPlaying){
+        playPause.innerText = "pause";
+        playingTimer = setInterval(()=>{
+            count += 1;
+            updateDigitalClock();
+        },1000)
+    } else {
+        clearInterval(playingTimer);
+        playPause.innerText = "play";
+    }
+}
+
+function resetFct(){
+    clearInterval(playingTimer);
+    count = 0;
+    timerInit();
+    playPause.innerText = 'start'
+
+}
+
+
 changeType.addEventListener('click', ()=>{
     isTimer = !isTimer;
     if (isTimer){
-        clearInterval(clock)
-        clockTimerInit();
+        setTimeout(()=>{
+            clearInterval(clock);
+            timerInit();
+        },600)
+        clearInterval(clock);
         changeType.innerText = "clock"
+        playPause.innerText = "Start"
+        reset.innerText = "Reset"
+        playPause.addEventListener('click', playPauseFct)
+        reset.addEventListener('click', resetFct)
     } else {
-        initDigitalClock();
-        clock = setInterval(()=>{
-            updateDate();
-            updateDigit({type: '.seconde__two', modulo: 10});
-        },1000)
+        isPlaying = false;
+        count = 0;
+        clearInterval(playingTimer);
+        setTimeout(()=>{
+            initDigitalClock();
+            clock = setInterval(()=>{
+                updateDate();
+                updateDigitalClock();
+            },1000)
+        }, 600)
+
         changeType.innerText = "timer"
+        playPause.innerText = "-----"
+        reset.innerText = "-----"
     }
 })
 
@@ -140,7 +198,7 @@ changeType.addEventListener('click', ()=>{
 initDigitalClock();
 let clock = setInterval(()=>{
     updateDate();
-    updateDigit({type: '.seconde__two', modulo: 10});
+    updateDigitalClock();
 },1000)
 
 clockCreation();
