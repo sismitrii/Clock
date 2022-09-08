@@ -32,69 +32,27 @@ function updateDate(){
     document.querySelector('.hour').style.transform = `translate(-100%, -50%) rotate(${((hour%12)*30) +(minute * 0.5) + 90}deg)`;
 }
 
-// function initDigitalClock(){
-
-// }
-
-function digitalUpdateTime(){
+function initDigitalClock(){
     const now = new Date();
-    const seconde__two = (now.getSeconds())%10;
+    const digitTab = now.toString().split(' ')[4].split('').filter((x)=> x !==':');
+    const timeTab = [
+        {type:'.hour__one', modulo: 3},
+        {type:'.hour__two', modulo: 10},
+        {type:'.minute__one', modulo: 6},
+        {type:'.minute__two',modulo: 10},
+        {type:'.seconde__one', modulo: 6},
+        {type:'.seconde__two', modulo: 10}
+    ]
 
-    if (seconde__two === 0){
-        updateSecondDigitTwo();
-    } 
-    
-    const secondeTwoAhead = document.querySelector('.seconde__two .ahead');
-    const secondeTwoBehind = document.querySelector('.seconde__two .behind');
-    const secondeTwoActif = document.querySelector('.seconde__two .actif');
-    const frontToSet = document.querySelector('.seconde__two .actif .front p');
-    const backToSet = document.querySelector('.seconde__two .actif .back p');
-
-    secondeTwoAhead.firstElementChild.style.transition = 'transform 0.6s ease-out';
-    secondeTwoAhead.classList.add('actif');
-    
-
-    setTimeout((now)=>{
-        secondeTwoAhead.classList.remove('ahead');
-        secondeTwoActif.firstElementChild.style.transition = "unset";
-
-        secondeTwoBehind.classList.add('ahead');
-        secondeTwoBehind.classList.remove('behind');
-
-        secondeTwoActif.classList.add('behind');
-        secondeTwoActif.classList.remove('actif');
-        frontToSet.innerText = (seconde__two + 1)%10;
-        backToSet.innerText = (seconde__two +2)%10;
-    }, 500);
+    timeTab.forEach((time)=>{
+        document.querySelector(`${time.type} .behind .front p`).innerText = (parseInt(digitTab[0]) + 1)%time.modulo;
+        document.querySelector(`${time.type} .behind .back p`).innerText = (parseInt(digitTab[0]) + 2)%time.modulo;
+        document.querySelector(`${time.type} .ahead .front p`).innerText = parseInt(digitTab[0]);
+        document.querySelector(`${time.type} .ahead .back p`).innerText = (parseInt(digitTab[0]) + 1)%time.modulo;
+        document.querySelector(`${time.type} .actif .back p`).innerText = parseInt(digitTab[0]);
+        digitTab.shift();
+    })
 }
-
-function updateSecondDigitTwo(){
-    const now = new Date();
-    const seconde__one = Math.ceil(now.getSeconds()/10);
-
-    const secondeOneAhead = document.querySelector('.seconde__one .ahead');
-    const secondeOneBehind = document.querySelector('.seconde__one .behind');
-    const secondeOneActif = document.querySelector('.seconde__one .actif');
-    const frontToSet = document.querySelector('.seconde__one .actif .front p');
-    const backToSet = document.querySelector('.seconde__one .actif .back p');
-
-    secondeOneAhead.firstElementChild.style.transition = 'transform 0.6s ease-out';
-    secondeOneAhead.classList.add('actif');
-
-    setTimeout(()=>{
-        secondeOneAhead.classList.remove('ahead');
-        secondeOneActif.firstElementChild.style.transition = "unset";
-
-        secondeOneBehind.classList.add('ahead');
-        secondeOneBehind.classList.remove('behind');
-
-        secondeOneActif.classList.add('behind');
-        secondeOneActif.classList.remove('actif');
-        frontToSet.innerText = (seconde__one + 1)%6;
-        backToSet.innerText = (seconde__one +2)%6;
-    }, 500);
-}
-
 
 function updateDigit(obj){
     const now = new Date();
@@ -141,7 +99,7 @@ function updateDigit(obj){
     ahead.classList.add('actif');
     
 
-    setTimeout((now)=>{
+    setTimeout(()=>{
         ahead.classList.remove('ahead');
         actif.firstElementChild.style.transition = "unset";
 
@@ -155,23 +113,34 @@ function updateDigit(obj){
     }, 500);
 }
 
+function clockTimerInit(){
+    
+}
+
+let isTimer = false;
+const changeType = document.querySelector('.change-type')
+changeType.addEventListener('click', ()=>{
+    isTimer = !isTimer;
+    if (isTimer){
+        clearInterval(clock)
+        clockTimerInit();
+        changeType.innerText = "clock"
+    } else {
+        initDigitalClock();
+        clock = setInterval(()=>{
+            updateDate();
+            updateDigit({type: '.seconde__two', modulo: 10});
+        },1000)
+        changeType.innerText = "timer"
+    }
+})
 
 
 
-
-
-
-
-
-
-
-
-
-setInterval(()=>{
+initDigitalClock();
+let clock = setInterval(()=>{
     updateDate();
-    //digitalUpdateTime();
     updateDigit({type: '.seconde__two', modulo: 10});
 },1000)
 
 clockCreation();
-updateDate();
