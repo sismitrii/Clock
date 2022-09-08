@@ -35,7 +35,33 @@ function updateDate(){
 function digitalUpdateTime(){
     const now = new Date();
     const seconde__one = Math.ceil(now.getSeconds()/10)
-    const seconde__two = (now.getSeconds())%10; 
+    const seconde__two = (now.getSeconds())%10;
+    
+    const ahead = document.querySelector('.ahead');
+    const behind = document.querySelector('.behind');
+    const actif = document.querySelector('.actif');
+    const frontToSet = document.querySelector('.actif .front p')
+    const backToSet = document.querySelector('.actif .back p')
+
+    ahead.firstElementChild.style.transition = 'transform 0.6s ease-out'
+    ahead.classList.add('actif');
+    
+
+    setTimeout(()=>{
+        ahead.classList.remove('ahead');
+        actif.firstElementChild.style.transition = "unset";
+
+        behind.classList.add('ahead');
+        behind.classList.remove('behind');
+
+        actif.classList.add('behind');
+        actif.classList.remove('actif');
+        frontToSet.innerText = (seconde__two + 1)%10
+        backToSet.innerText = (seconde__two +2)%10 
+    }, 500)
+
+
+
 }
 
 
