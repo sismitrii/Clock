@@ -31,7 +31,18 @@ function updateDate(){
     document.querySelector('.minute').style.transform = `translate(-100%, -50%) rotate(${(minute * 6)+ (seconde* 0.1) + 90}deg)`
     document.querySelector('.hour').style.transform = `translate(-100%, -50%) rotate(${((hour%12)*30) +(minute * 0.5) + 90}deg)`
 }
-setInterval(updateDate,1000)
+
+function digitalUpdateTime(){
+    const now = new Date();
+    const seconde__one = Math.ceil(now.getSeconds()/10)
+    const seconde__two = (now.getSeconds())%10; 
+}
+
+
+setInterval(()=>{
+    updateDate();
+    digitalUpdateTime();
+},1000)
 
 clockCreation();
 updateDate();
