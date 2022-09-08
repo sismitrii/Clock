@@ -112,24 +112,31 @@ body {
 } 
 
 
+
+
+
 .digital-container {
     display: flex;
-    width: 500px;
+    width: 600px;
     height: 150px;
     position: absolute;
     left: 50%;
     top: 10%;
     transform: translateX(-50%);
-    border: 1px solid black;
 }
 
 .bloc {
     width: 75px;
     height: 100%;
-    border: 1px solid red;
     position: relative;
     top: 0px;
-    margin: 10px;
+    margin: 0px 10px;
+}
+
+.dot {
+    height: 100%;
+    width: 20px;
+    font-size: 15vh;
 }
 
 .digit {
