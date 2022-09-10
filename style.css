@@ -190,6 +190,7 @@ body {
 .half p {
     line-height: 17vh;
     font-size: 18vh ;
+    backface-visibility: hidden;
 }
 
 .bottom {
